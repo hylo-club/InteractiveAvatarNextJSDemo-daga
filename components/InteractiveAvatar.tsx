@@ -30,7 +30,7 @@ export default function InteractiveAvatar() {
   const [isLoadingRepeat, setIsLoadingRepeat] = useState(false);
   const [stream, setStream] = useState<MediaStream>();
   const [debug, setDebug] = useState<string>();
-  const [knowledgeId, setKnowledgeId] = useState<string>("");
+  const [knowledgeId, setKnowledgeId] = useState<string>("f784b05c0195480486805d96cdfec2e9");
   const [avatarId, setAvatarId] = useState<string>("");
   const [language, setLanguage] = useState<string>('en');
 
@@ -38,7 +38,7 @@ export default function InteractiveAvatar() {
   const [text, setText] = useState<string>("");
   const mediaStream = useRef<HTMLVideoElement>(null);
   const avatar = useRef<StreamingAvatar | null>(null);
-  const [chatMode, setChatMode] = useState("text_mode");
+  const [chatMode, setChatMode] = useState("voice_mode");
   const [isUserTalking, setIsUserTalking] = useState(false);
 
   async function fetchAccessToken() {
@@ -57,7 +57,24 @@ export default function InteractiveAvatar() {
 
     return "";
   }
-
+  const knowledge_base_custom = {
+    "space_id": "59f6bbd7b41e4bba9d71921f5cd3d01c",
+    "id": "f784b05c0195480486805d96cdfec2e9",
+    "meta_data": {
+        "faq": {}
+    },
+    "persona": null,
+    "instructions": null,
+    "opening": "Hi, I am Yali your English Tutor let's get started",
+    "created_ts": "2024-12-12T05:58:10",
+    "username": "59f6bbd7b41e4bba9d71921f5cd3d01c",
+    "name": "Hotel Booking Agent",
+    "knowledge": null,
+    "freeform": "You are an experienced and supportive English teacher with over 15 years of teaching experience. Your teaching style combines:\n\nPatience and encouragement - You celebrate progress and create a safe space for making mistakes\nPersonalization - You adapt to each student's level, interests, and learning goals\nReal-world context - You use practical examples and everyday situations to teach language concepts\nClear explanations - You break down complex grammar and vocabulary in simple terms\nInteractive learning - You engage students in dialogue and encourage them to practice actively\n\nWhen teaching:\n\nStart by assessing the student's current English level through casual conversation\nFocus on one concept at a time and provide plenty of examples\nGive constructive feedback that highlights both strengths and areas for improvement\nUse a natural conversational tone while maintaining professional guidance\nOffer practice exercises and real-world applications of learned concepts\nCorrect errors gently by modeling the correct usage rather than just pointing out mistakes\nEncourage questions and create an engaging learning environment\n\nTeaching scope includes:\n\nGrammar and syntax\nVocabulary and idioms\nPronunciation and accent reduction\nWriting skills\nConversation practice\nTest preparation (IELTS, TOEFL, etc.)\nBusiness English\nCultural context and common expressions",
+    "is_deleted": false,
+    "updated_ts": "2024-12-12T05:58:10",
+    "links": []
+}
   async function startSession() {
     setIsLoadingSession(true);
     const newToken = await fetchAccessToken();
@@ -219,24 +236,24 @@ export default function InteractiveAvatar() {
           ) : !isLoadingSession ? (
             <div className="h-full justify-center items-center flex flex-col gap-8 w-[500px] self-center">
               <div className="flex flex-col gap-2 w-full">
-                <p className="text-sm font-medium leading-none">
+                {/* <p className="text-sm font-medium leading-none">
                   Custom Knowledge ID (optional)
-                </p>
-                <Input
+                </p> */}
+                {/* <Input
                   placeholder="Enter a custom knowledge ID"
                   value={knowledgeId}
                   onChange={(e) => setKnowledgeId(e.target.value)}
-                />
-                <p className="text-sm font-medium leading-none">
+                /> */}
+                {/* <p className="text-sm font-medium leading-none">
                   Custom Avatar ID (optional)
                 </p>
                 <Input
                   placeholder="Enter a custom avatar ID"
                   value={avatarId}
                   onChange={(e) => setAvatarId(e.target.value)}
-                />
+                /> */}
                 <Select
-                  placeholder="Or select one from these example avatars"
+                  placeholder="select one from these example avatars"
                   size="md"
                   onChange={(e) => {
                     setAvatarId(e.target.value);
@@ -282,7 +299,7 @@ export default function InteractiveAvatar() {
         </CardBody>
         <Divider />
         <CardFooter className="flex flex-col gap-3 relative">
-          <Tabs
+          {/* <Tabs
             aria-label="Options"
             selectedKey={chatMode}
             onSelectionChange={(v) => {
@@ -291,7 +308,7 @@ export default function InteractiveAvatar() {
           >
             <Tab key="text_mode" title="Text mode" />
             <Tab key="voice_mode" title="Voice mode" />
-          </Tabs>
+          </Tabs> */}
           {chatMode === "text_mode" ? (
             <div className="w-full flex relative">
               <InteractiveAvatarTextInput
@@ -322,9 +339,9 @@ export default function InteractiveAvatar() {
         </CardFooter>
       </Card>
       <p className="font-mono text-right">
-        <span className="font-bold">Console:</span>
-        <br />
-        {debug}
+        {/* <span className="-bold">Console:</span> */}
+        {/* <br /> */}
+        {/* {debug} */}
       </p>
     </div>
   );

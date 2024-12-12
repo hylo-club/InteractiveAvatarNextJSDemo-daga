@@ -1,24 +1,21 @@
 export const AVATARS = [
   {
     avatar_id: "Eric_public_pro2_20230608",
-    name: "Edward in Blue Shirt",
+    name: "Edward Professor",
   },
   {
     avatar_id: "Tyler-incasualsuit-20220721",
-    name: "Tyler in Casual Suit",
+    name: "Tyler Professor",
   },
   {
     avatar_id: "Anna_public_3_20240108",
-    name: "Anna in Brown T-shirt",
+    name: "Anna Professor",
   },
   {
     avatar_id: "Susan_public_2_20240328",
-    name: "Susan in Black Shirt",
+    name: "Susan Professor",
   },
-  {
-    avatar_id: "josh_lite3_20230714",
-    name: "Joshua Heygen CEO",
-  },
+ 
 ];
 
 export const STT_LANGUAGE_LIST = [
