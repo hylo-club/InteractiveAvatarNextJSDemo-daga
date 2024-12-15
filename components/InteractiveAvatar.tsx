@@ -197,7 +197,13 @@ export default function InteractiveAvatar() {
   }, [mediaStream, stream]);
 
   return (
-    <div className="w-full flex flex-col gap-4">
+    <div className="w-full flex flex-col gap-4"
+    style={{
+      backgroundImage: "url('./back.png')",
+      backgroundSize: "cover",
+      backgroundPosition: "center",
+    }}
+    >
       <Card>
         <CardBody className="h-[500px] flex flex-col justify-center items-center">
           {stream ? (
@@ -253,7 +259,7 @@ export default function InteractiveAvatar() {
                   onChange={(e) => setAvatarId(e.target.value)}
                 /> */}
                 <Select
-                  placeholder="select one from these example avatars"
+                  placeholder="select one from these teachers"
                   size="md"
                   onChange={(e) => {
                     setAvatarId(e.target.value);
