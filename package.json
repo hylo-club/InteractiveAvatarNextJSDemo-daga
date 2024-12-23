@@ -2,13 +2,12 @@
   "name": "next-app-template",
   "version": "0.0.1",
   "private": true,
-  "type": "module",
-  "scripts": {
-    "dev": "node_modules/next/dist/bin/next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "eslint . --ext .ts,.tsx -c .eslintrc.json --fix"
-  },
+"scripts": {
+  "dev": "node_modules/next/dist/bin/next dev -p 3001",
+  "build": "next build",
+  "start": "next start -p 3001",
+  "lint": "eslint . --ext .ts,.tsx -c .eslintrc.json --fix"
+},
   "dependencies": {
     "@ai-sdk/openai": "^0.0.34",
     "@emotion/react": "^11.14.0",

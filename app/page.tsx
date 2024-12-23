@@ -1,4 +1,5 @@
 "use client";
+
 import { useEffect, useRef, useState } from "react";
 import { useMemoizedFn, usePrevious } from "ahooks";
 import { PaperPlaneRight } from "@phosphor-icons/react";
@@ -11,8 +12,10 @@ import StreamingAvatar, {
   VoiceEmotion,
 } from "@heygen/streaming-avatar";
 import {
+  AppBar,
   Button,
   Card,
+  Toolbar,
   CardContent,
   CardActions,
   Divider,
@@ -24,9 +27,11 @@ import {
   Tooltip,
   FormControl,
   InputLabel,
+  useTheme,
+  useMediaQuery,
+  Box,
 } from "@mui/material";
 
-// Constants remain the same
 export const AVATARS = [
   {
     avatar_id: "Eric_public_pro2_20230608",
@@ -50,11 +55,8 @@ export const STT_LANGUAGE_LIST = [
   { label: 'Bulgarian', value: 'bg', key: 'bg' },
   { label: 'Chinese', value: 'zh', key: 'zh' },
   { label: 'English', value: 'en', key: 'en' },
-
-  // ... rest of the language list remains the same
 ];
 
-// Text Input Component using Material-UI
 function InteractiveAvatarTextInput({
   label,
   placeholder,
@@ -104,8 +106,11 @@ function InteractiveAvatarTextInput({
   );
 }
 
-// Main Component
 export default function InteractiveAvatar() {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+
+  // State declarations with proper typing
   const [isLoadingSession, setIsLoadingSession] = useState(false);
   const [isLoadingRepeat, setIsLoadingRepeat] = useState(false);
   const [stream, setStream] = useState(null);
@@ -119,7 +124,6 @@ export default function InteractiveAvatar() {
   const [chatMode, setChatMode] = useState("voice_mode");
   const [isUserTalking, setIsUserTalking] = useState(false);
 
-  // Handlers remain the same
   async function fetchAccessToken() {
     try {
       const response = await fetch("/api/get-access-token", {
@@ -135,38 +139,48 @@ export default function InteractiveAvatar() {
 
   async function startSession() {
     setIsLoadingSession(true);
-    const newToken = await fetchAccessToken();
-
-    avatar.current = new StreamingAvatar({
-      token: newToken,
-    });
-
-    // Event listeners setup remains the same
-    avatar.current.on(StreamingEvents.AVATAR_START_TALKING, (e) => {
-      console.log("Avatar started talking", e);
-    });
-    avatar.current.on(StreamingEvents.AVATAR_STOP_TALKING, (e) => {
-      console.log("Avatar stopped talking", e);
-    });
-    avatar.current.on(StreamingEvents.STREAM_DISCONNECTED, () => {
-      console.log("Stream disconnected");
-      endSession();
-    });
-    avatar.current.on(StreamingEvents.STREAM_READY, (event) => {
-      console.log("Stream ready:", event.detail);
-      setStream(event.detail);
-    });
-    avatar.current.on(StreamingEvents.USER_START, (event) => {
-      console.log("User started talking:", event);
-      setIsUserTalking(true);
-    });
-    avatar.current.on(StreamingEvents.USER_STOP, (event) => {
-      console.log("User stopped talking:", event);
-      setIsUserTalking(false);
-    });
-
     try {
-      const res = await avatar.current.createStartAvatar({
+      const newToken = await fetchAccessToken();
+      if (!newToken) {
+        throw new Error("Failed to get access token");
+      }
+
+      avatar.current = new StreamingAvatar({
+        token: newToken,
+      });
+
+      // Set up event listeners
+      avatar.current.on(StreamingEvents.AVATAR_START_TALKING, (e) => {
+        console.log("Avatar started talking", e);
+      });
+      
+      avatar.current.on(StreamingEvents.AVATAR_STOP_TALKING, (e) => {
+        console.log("Avatar stopped talking", e);
+      });
+      
+      avatar.current.on(StreamingEvents.STREAM_DISCONNECTED, () => {
+        console.log("Stream disconnected");
+        endSession();
+      });
+      
+      avatar.current.on(StreamingEvents.STREAM_READY, (event) => {
+        console.log("Stream ready:", event.detail);
+        if (event.detail) {
+          setStream(event.detail);
+        }
+      });
+      
+      avatar.current.on(StreamingEvents.USER_START, () => {
+        console.log("User started talking");
+        setIsUserTalking(true);
+      });
+      
+      avatar.current.on(StreamingEvents.USER_STOP, () => {
+        console.log("User stopped talking");
+        setIsUserTalking(false);
+      });
+
+      await avatar.current.createStartAvatar({
         quality: AvatarQuality.Low,
         avatarName: avatarId,
         knowledgeId: knowledgeId,
@@ -184,55 +198,59 @@ export default function InteractiveAvatar() {
       setChatMode("voice_mode");
     } catch (error) {
       console.error("Error starting avatar session:", error);
+      setDebug("Failed to start session");
     } finally {
       setIsLoadingSession(false);
     }
   }
 
-  // Other handlers remain the same
   async function handleSpeak() {
+    if (!avatar.current || !text.trim()) return;
+    
     setIsLoadingRepeat(true);
-    if (!avatar.current) {
-      setDebug("Avatar API not initialized");
-      return;
+    try {
+      await avatar.current.speak({
+        text: text,
+        taskType: TaskType.REPEAT,
+        taskMode: TaskMode.SYNC
+      });
+    } catch (error) {
+      console.error("Error in speak:", error);
+      setDebug(error.message);
+    } finally {
+      setIsLoadingRepeat(false);
     }
-    await avatar.current.speak({ 
-      text: text, 
-      taskType: TaskType.REPEAT, 
-      taskMode: TaskMode.SYNC 
-    }).catch((e) => {
-      setDebug(e.message);
-    });
-    setIsLoadingRepeat(false);
   }
 
   async function handleInterrupt() {
-    if (!avatar.current) {
-      setDebug("Avatar API not initialized");
-      return;
+    if (!avatar.current) return;
+    
+    try {
+      await avatar.current.interrupt();
+    } catch (error) {
+      console.error("Error in interrupt:", error);
+      setDebug(error.message);
     }
-    await avatar.current.interrupt().catch((e) => {
-      setDebug(e.message);
-    });
   }
 
   async function endSession() {
-    await avatar.current?.stopAvatar();
+    if (avatar.current) {
+      await avatar.current.stopAvatar();
+    }
     setStream(null);
   }
 
-  // Effects remain the same
   useEffect(() => {
     if (stream && mediaStream.current) {
       mediaStream.current.srcObject = stream;
       mediaStream.current.onloadedmetadata = () => {
-        mediaStream.current.play();
-        setDebug("Playing");
+        mediaStream.current.play().catch(error => {
+          console.error("Error playing video:", error);
+        });
       };
     }
-  }, [mediaStream, stream]);
+  }, [stream]);
 
-  // Cleanup effect
   useEffect(() => {
     return () => {
       endSession();
@@ -240,17 +258,41 @@ export default function InteractiveAvatar() {
   }, []);
 
   return (
-    <div style={{
+    <Box sx={{
       width: '100%',
-      backgroundImage: "url('./back.png')",
+      minHeight: '100vh',
+      // backgroundImage: "url('./back.png')",
       backgroundSize: "cover",
       backgroundPosition: "center",
-      padding: '20px'
+      padding: { xs: '10px', sm: '20px' },
     }}>
-      <Card sx={{ maxWidth: '100%' }}>
-        <CardContent sx={{ height: 500, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
+      <AppBar position="static" color="default" elevation={1}>
+        <Toolbar>
+          <Box sx={{ display: 'flex', alignItems: 'center', flex: 1 }}>
+            <img 
+              src="/logo.png" 
+              alt="Logo" 
+              style={{ height: '40px', marginRight: '16px' }} 
+            />
+          </Box>
+        </Toolbar>
+      </AppBar>
+
+      <Card sx={{ maxWidth: '100%', margin: '0 auto' }}>
+        <CardContent sx={{ 
+          height: { xs: 400, sm: 500 },
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}>
           {stream ? (
-            <div style={{ position: 'relative', height: 500, width: 900 }}>
+            <Box sx={{
+              position: 'relative',
+              height: { xs: '100%', sm: 500 },
+              width: '100%',
+              maxWidth: { xs: '100%', sm: 900 },
+            }}>
               <video
                 ref={mediaStream}
                 autoPlay
@@ -258,36 +300,52 @@ export default function InteractiveAvatar() {
                 style={{
                   width: "100%",
                   height: "100%",
-                  objectFit: "contain",
+                  objectFit: isMobile ? "cover" : "contain",
                 }}
               >
                 <track kind="captions" />
               </video>
-              <div style={{ position: 'absolute', bottom: 12, right: 12, display: 'flex', flexDirection: 'column', gap: 8 }}>
+              <Box sx={{
+                position: 'absolute',
+                bottom: { xs: 8, sm: 12 },
+                right: { xs: 8, sm: 12 },
+                display: 'flex',
+                flexDirection: { xs: 'row', sm: 'column' },
+                gap: 1,
+              }}>
                 <Button
                   variant="contained"
                   color="primary"
                   onClick={handleInterrupt}
+                  size={isMobile ? "small" : "medium"}
                 >
-                  Interrupt task
+                  {isMobile ? "Stop" : "Interrupt task"}
                 </Button>
                 <Button
                   variant="contained"
                   color="primary"
                   onClick={endSession}
+                  size={isMobile ? "small" : "medium"}
                 >
-                  End session
+                  End
                 </Button>
-              </div>
-            </div>
+              </Box>
+            </Box>
           ) : !isLoadingSession ? (
-            <div style={{ width: 500, display: 'flex', flexDirection: 'column', gap: 16 }}>
+            <Box sx={{
+              width: { xs: '100%', sm: 500 },
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 2,
+              padding: { xs: 2, sm: 0 },
+            }}>
               <FormControl fullWidth>
                 <InputLabel>Select Teacher</InputLabel>
                 <Select
                   value={avatarId}
                   label="Select Teacher"
                   onChange={(e) => setAvatarId(e.target.value)}
+                  size={isMobile ? "small" : "medium"}
                 >
                   {AVATARS.map((avatar) => (
                     <MenuItem key={avatar.avatar_id} value={avatar.avatar_id}>
@@ -303,6 +361,7 @@ export default function InteractiveAvatar() {
                   value={language}
                   label="Select Language"
                   onChange={(e) => setLanguage(e.target.value)}
+                  size={isMobile ? "small" : "medium"}
                 >
                   {STT_LANGUAGE_LIST.map((lang) => (
                     <MenuItem key={lang.key} value={lang.value}>
@@ -317,18 +376,29 @@ export default function InteractiveAvatar() {
                 color="primary"
                 fullWidth
                 onClick={startSession}
+                size={isMobile ? "small" : "medium"}
+                disabled={!avatarId}
               >
                 Start session
               </Button>
-            </div>
+            </Box>
           ) : (
             <CircularProgress />
           )}
         </CardContent>
         <Divider />
-        <CardActions sx={{ padding: 2, display: 'flex', flexDirection: 'column', gap: 2 }}>
+        <CardActions sx={{
+          padding: { xs: 1, sm: 2 },
+          display: 'flex',
+          flexDirection: 'column',
+          gap: { xs: 1, sm: 2 },
+        }}>
           {chatMode === "text_mode" ? (
-            <div style={{ width: '100%', position: 'relative' }}>
+            <Box sx={{
+              width: '100%',
+              position: 'relative',
+              padding: { xs: 1, sm: 0 },
+            }}>
               <InteractiveAvatarTextInput
                 disabled={!stream}
                 input={text}
@@ -341,23 +411,32 @@ export default function InteractiveAvatar() {
               {text && (
                 <Chip
                   label="Listening"
-                  sx={{ position: 'absolute', right: 64, top: 12 }}
+                  sx={{
+                    position: 'absolute',
+                    right: { xs: 8, sm: 64 },
+                    top: { xs: 8, sm: 12 },
+                  }}
                 />
               )}
-            </div>
+            </Box>
           ) : (
-            <div style={{ width: '100%', textAlign: 'center' }}>
+            <Box sx={{
+              width: '100%',
+              textAlign: 'center',
+              padding: { xs: 1, sm: 0 },
+            }}>
               <Button
                 variant="contained"
                 color="primary"
                 disabled={!isUserTalking}
+                size={isMobile ? "small" : "medium"}
               >
                 {isUserTalking ? "Listening" : "Voice chat"}
               </Button>
-            </div>
+            </Box>
           )}
         </CardActions>
       </Card>
-    </div>
+    </Box>
   );
 }
