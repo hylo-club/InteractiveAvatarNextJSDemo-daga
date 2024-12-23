@@ -30,6 +30,7 @@ import {
   useTheme,
   useMediaQuery,
   Box,
+  Typography
 } from "@mui/material";
 
 export const AVATARS = [
@@ -274,6 +275,25 @@ export default function InteractiveAvatar() {
               alt="Logo" 
               style={{ height: '40px', marginRight: '16px' }} 
             />
+          </Box>
+          <Box sx={{ 
+            display: 'flex', 
+            flexDirection: 'column', 
+            alignItems: { xs: 'center', sm: 'flex-end' }
+          }}>
+            <Typography variant="h6" component="h1" sx={{ 
+              color: 'primary.main',
+              fontWeight: 600,
+              textAlign: { xs: 'center', sm: 'right' }
+            }}>
+              Hi, I am Jenny
+            </Typography>
+            <Typography variant="body1" sx={{ 
+              color: 'text.secondary',
+              textAlign: { xs: 'center', sm: 'right' }
+            }}>
+              I will be glad to assist you for Admission, Academic, Special, Psychological and Emotional needs
+            </Typography>
           </Box>
         </Toolbar>
       </AppBar>
