@@ -43,10 +43,7 @@ interface Language {
 }
 
 const AVATARS: Avatar[] = [
-  {
-    avatar_id: "Eric_public_pro2_20230608",
-    name: "Edward Professor",
-  },
+  
   {
     avatar_id: "Tyler-incasualsuit-20220721",
     name: "Tyler Professor",
@@ -54,11 +51,7 @@ const AVATARS: Avatar[] = [
   {
     avatar_id: "Anna_public_3_20240108",
     name: "Anna Professor",
-  },
-  {
-    avatar_id: "Susan_public_2_20240328",
-    name: "Susan Professor",
-  },
+  }
 ];
 
 const STT_LANGUAGE_LIST: Language[] = [
