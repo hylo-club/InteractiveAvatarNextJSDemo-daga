@@ -1,9 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { useMemoizedFn, usePrevious } from "ahooks";
 import { PaperPlaneRight } from "@phosphor-icons/react";
-import clsx from "clsx";
 import StreamingAvatar, {
   AvatarQuality,
   StreamingEvents,
@@ -33,7 +31,18 @@ import {
   Typography
 } from "@mui/material";
 
-export const AVATARS = [
+interface Avatar {
+  avatar_id: string;
+  name: string;
+}
+
+interface Language {
+  label: string;
+  value: string;
+  key: string;
+}
+
+const AVATARS: Avatar[] = [
   {
     avatar_id: "Eric_public_pro2_20230608",
     name: "Edward Professor",
@@ -52,11 +61,21 @@ export const AVATARS = [
   },
 ];
 
-export const STT_LANGUAGE_LIST = [
+const STT_LANGUAGE_LIST: Language[] = [
   { label: 'Bulgarian', value: 'bg', key: 'bg' },
   { label: 'Chinese', value: 'zh', key: 'zh' },
   { label: 'English', value: 'en', key: 'en' },
 ];
+
+interface InteractiveAvatarTextInputProps {
+  label: string;
+  placeholder: string;
+  input: string;
+  onSubmit: () => void;
+  setInput: (value: string) => void;
+  disabled?: boolean;
+  loading?: boolean;
+}
 
 function InteractiveAvatarTextInput({
   label,
@@ -66,7 +85,7 @@ function InteractiveAvatarTextInput({
   setInput,
   disabled = false,
   loading = false,
-}) {
+}: InteractiveAvatarTextInputProps) {
   const handleSubmit = () => {
     if (input.trim() === "") return;
     onSubmit();
@@ -111,34 +130,33 @@ export default function InteractiveAvatar() {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
-  // State declarations with proper typing
-  const [isLoadingSession, setIsLoadingSession] = useState(false);
-  const [isLoadingRepeat, setIsLoadingRepeat] = useState(false);
-  const [stream, setStream] = useState(null);
-  const [debug, setDebug] = useState("");
-  const [knowledgeId] = useState("f784b05c0195480486805d96cdfec2e9");
-  const [avatarId, setAvatarId] = useState("");
-  const [language, setLanguage] = useState('en');
-  const [text, setText] = useState("");
-  const mediaStream = useRef(null);
-  const avatar = useRef(null);
-  const [chatMode, setChatMode] = useState("voice_mode");
-  const [isUserTalking, setIsUserTalking] = useState(false);
+  const [isLoadingSession, setIsLoadingSession] = useState<boolean>(false);
+  const [isLoadingRepeat, setIsLoadingRepeat] = useState<boolean>(false);
+  const [stream, setStream] = useState<MediaStream | null>(null);
+  const [debug, setDebug] = useState<string>("");
+  const [knowledgeId] = useState<string>("f784b05c0195480486805d96cdfec2e9");
+  const [avatarId, setAvatarId] = useState<string>("");
+  const [language, setLanguage] = useState<string>('en');
+  const [text, setText] = useState<string>("");
+  const [chatMode, setChatMode] = useState<"voice_mode" | "text_mode">("voice_mode");
+  const [isUserTalking, setIsUserTalking] = useState<boolean>(false);
 
-  async function fetchAccessToken() {
+  const mediaStream = useRef<HTMLVideoElement | null>(null);
+  const avatar = useRef<StreamingAvatar | null>(null);
+
+  const fetchAccessToken = async (): Promise<string> => {
     try {
       const response = await fetch("/api/get-access-token", {
         method: "POST",
       });
-      const token = await response.text();
-      return token;
+      return await response.text();
     } catch (error) {
       console.error("Error fetching access token:", error);
       return "";
     }
-  }
+  };
 
-  async function startSession() {
+  const startSession = async (): Promise<void> => {
     setIsLoadingSession(true);
     try {
       const newToken = await fetchAccessToken();
@@ -149,6 +167,10 @@ export default function InteractiveAvatar() {
       avatar.current = new StreamingAvatar({
         token: newToken,
       });
+
+      if (!avatar.current) {
+        throw new Error("Failed to create avatar instance");
+      }
 
       // Set up event listeners
       avatar.current.on(StreamingEvents.AVATAR_START_TALKING, (e) => {
@@ -161,7 +183,7 @@ export default function InteractiveAvatar() {
       
       avatar.current.on(StreamingEvents.STREAM_DISCONNECTED, () => {
         console.log("Stream disconnected");
-        endSession();
+        void endSession();
       });
       
       avatar.current.on(StreamingEvents.STREAM_READY, (event) => {
@@ -193,9 +215,10 @@ export default function InteractiveAvatar() {
         disableIdleTimeout: true,
       });
 
-      await avatar.current?.startVoiceChat({
+      await avatar.current.startVoiceChat({
         useSilencePrompt: false
       });
+      
       setChatMode("voice_mode");
     } catch (error) {
       console.error("Error starting avatar session:", error);
@@ -203,9 +226,9 @@ export default function InteractiveAvatar() {
     } finally {
       setIsLoadingSession(false);
     }
-  }
+  };
 
-  async function handleSpeak() {
+  const handleSpeak = async (): Promise<void> => {
     if (!avatar.current || !text.trim()) return;
     
     setIsLoadingRepeat(true);
@@ -216,36 +239,40 @@ export default function InteractiveAvatar() {
         taskMode: TaskMode.SYNC
       });
     } catch (error) {
-      console.error("Error in speak:", error);
-      setDebug(error.message);
+      if (error instanceof Error) {
+        console.error("Error in speak:", error);
+        setDebug(error.message);
+      }
     } finally {
       setIsLoadingRepeat(false);
     }
-  }
+  };
 
-  async function handleInterrupt() {
+  const handleInterrupt = async (): Promise<void> => {
     if (!avatar.current) return;
     
     try {
       await avatar.current.interrupt();
     } catch (error) {
-      console.error("Error in interrupt:", error);
-      setDebug(error.message);
+      if (error instanceof Error) {
+        console.error("Error in interrupt:", error);
+        setDebug(error.message);
+      }
     }
-  }
+  };
 
-  async function endSession() {
+  const endSession = async (): Promise<void> => {
     if (avatar.current) {
       await avatar.current.stopAvatar();
     }
     setStream(null);
-  }
+  };
 
   useEffect(() => {
     if (stream && mediaStream.current) {
       mediaStream.current.srcObject = stream;
       mediaStream.current.onloadedmetadata = () => {
-        mediaStream.current.play().catch(error => {
+        void mediaStream.current?.play().catch(error => {
           console.error("Error playing video:", error);
         });
       };
@@ -254,7 +281,7 @@ export default function InteractiveAvatar() {
 
   useEffect(() => {
     return () => {
-      endSession();
+      void endSession();
     };
   }, []);
 
@@ -262,9 +289,6 @@ export default function InteractiveAvatar() {
     <Box sx={{
       width: '100%',
       minHeight: '100vh',
-      // backgroundImage: "url('./back.png')",
-      backgroundSize: "cover",
-      backgroundPosition: "center",
       padding: { xs: '10px', sm: '20px' },
     }}>
       <AppBar position="static" color="default" elevation={1}>
@@ -336,7 +360,7 @@ export default function InteractiveAvatar() {
                 <Button
                   variant="contained"
                   color="primary"
-                  onClick={handleInterrupt}
+                  onClick={() => void handleInterrupt()}
                   size={isMobile ? "small" : "medium"}
                 >
                   {isMobile ? "Stop" : "Interrupt task"}
@@ -344,7 +368,7 @@ export default function InteractiveAvatar() {
                 <Button
                   variant="contained"
                   color="primary"
-                  onClick={endSession}
+                  onClick={() => void endSession()}
                   size={isMobile ? "small" : "medium"}
                 >
                   End
@@ -395,7 +419,7 @@ export default function InteractiveAvatar() {
                 variant="contained"
                 color="primary"
                 fullWidth
-                onClick={startSession}
+                onClick={() => void startSession()}
                 size={isMobile ? "small" : "medium"}
                 disabled={!avatarId}
               >
@@ -426,7 +450,7 @@ export default function InteractiveAvatar() {
                 loading={isLoadingRepeat}
                 placeholder="Type something for the avatar to respond"
                 setInput={setText}
-                onSubmit={handleSpeak}
+                onSubmit={() => void handleSpeak()}
               />
               {text && (
                 <Chip
