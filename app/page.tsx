@@ -375,21 +375,7 @@ export default function InteractiveAvatar() {
             }}>
 
 
-              <FormControl fullWidth>
-                <InputLabel>Select Language</InputLabel>
-                <Select
-                  value={language}
-                  label="Select Language"
-                  onChange={(e) => setLanguage(e.target.value)}
-                  size={isMobile ? "small" : "medium"}
-                >
-                  {STT_LANGUAGE_LIST.map((lang) => (
-                    <MenuItem key={lang.key} value={lang.value}>
-                      {lang.label}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
+             
 
               <Button
                 variant="contained"
