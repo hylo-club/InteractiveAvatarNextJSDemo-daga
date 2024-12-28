@@ -44,10 +44,7 @@ interface Language {
 
 const AVATARS: Avatar[] = [
   
-  {
-    avatar_id: "Tyler-incasualsuit-20220721",
-    name: "Tyler Professor",
-  },
+
   {
     avatar_id: "Anna_public_3_20240108",
     name: "Anna Professor",
@@ -128,7 +125,7 @@ export default function InteractiveAvatar() {
   const [stream, setStream] = useState<MediaStream | null>(null);
   const [debug, setDebug] = useState<string>("");
   const [knowledgeId] = useState<string>("f784b05c0195480486805d96cdfec2e9");
-  const [avatarId, setAvatarId] = useState<string>("");
+  const [avatarId, setAvatarId] = useState<string>("Anna_public_3_20240108");
   const [language, setLanguage] = useState<string>('en');
   const [text, setText] = useState<string>("");
   const [chatMode, setChatMode] = useState<"voice_mode" | "text_mode">("voice_mode");
@@ -376,21 +373,7 @@ export default function InteractiveAvatar() {
               gap: 2,
               padding: { xs: 2, sm: 0 },
             }}>
-              <FormControl fullWidth>
-                <InputLabel>Select Teacher</InputLabel>
-                <Select
-                  value={avatarId}
-                  label="Select Teacher"
-                  onChange={(e) => setAvatarId(e.target.value)}
-                  size={isMobile ? "small" : "medium"}
-                >
-                  {AVATARS.map((avatar) => (
-                    <MenuItem key={avatar.avatar_id} value={avatar.avatar_id}>
-                      {avatar.name}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
+
 
               <FormControl fullWidth>
                 <InputLabel>Select Language</InputLabel>
