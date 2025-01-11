@@ -46,7 +46,7 @@ const AVATARS: Avatar[] = [
   
 
   {
-    avatar_id: "Anna_public_3_20240108",
+    avatar_id: "da6bd896e2b843e4b4d033a4473eebef",
     name: "Anna Professor",
   }
 ];
@@ -125,7 +125,7 @@ export default function InteractiveAvatar() {
   const [stream, setStream] = useState<MediaStream | null>(null);
   const [debug, setDebug] = useState<string>("");
   const [knowledgeId] = useState<string>("f784b05c0195480486805d96cdfec2e9");
-  const [avatarId, setAvatarId] = useState<string>("Anna_public_3_20240108");
+  const [avatarId, setAvatarId] = useState<string>("eacbb14b1c3b4586876c521713bae943");
   const [language, setLanguage] = useState<string>('en');
   const [text, setText] = useState<string>("");
   const [chatMode, setChatMode] = useState<"voice_mode" | "text_mode">("voice_mode");
