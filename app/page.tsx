@@ -194,7 +194,7 @@ export default function InteractiveAvatar() {
       });
 
       await avatar.current.createStartAvatar({
-        quality: AvatarQuality.Low,
+        quality: AvatarQuality.High,
         avatarName: avatarId,
         knowledgeId: knowledgeId,
         voice: {
