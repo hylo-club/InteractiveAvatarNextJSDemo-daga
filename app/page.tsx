@@ -300,7 +300,7 @@ export default function InteractiveAvatar() {
               fontWeight: 600,
               textAlign: { xs: 'center', sm: 'right' }
             }}>
-              Hi, I am Jenny
+              Hi, I am Seema Negi
             </Typography>
             <Typography variant="body1" sx={{ 
               color: 'text.secondary',
