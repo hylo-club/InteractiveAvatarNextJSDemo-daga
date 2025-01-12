@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { PaperPlaneRight } from "@phosphor-icons/react";
 import StreamingAvatar, {
   AvatarQuality,
+teja,
   StreamingEvents,
   TaskMode,
   TaskType,
