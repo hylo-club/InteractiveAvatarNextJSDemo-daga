@@ -4,7 +4,6 @@ import { useEffect, useRef, useState } from "react";
 import { PaperPlaneRight } from "@phosphor-icons/react";
 import StreamingAvatar, {
   AvatarQuality,
-teja,
   StreamingEvents,
   TaskMode,
   TaskType,
@@ -381,8 +380,7 @@ export default function InteractiveAvatar() {
               <Button
                 variant="contained"
                 color="primary"
-                fullWidth
-                onClick={() => void startSession()}
+                
                 size={isMobile ? "small" : "medium"}
                 disabled={!avatarId}
               >
