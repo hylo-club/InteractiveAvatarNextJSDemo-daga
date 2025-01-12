@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { PaperPlaneRight } from "@phosphor-icons/react";
+import { PaperPlaneRight, Video } from "@phosphor-icons/react";
 import StreamingAvatar, {
   AvatarQuality,
   StreamingEvents,
@@ -119,7 +119,29 @@ function InteractiveAvatarTextInput({
 export default function InteractiveAvatar() {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const [timeLeft, setTimeLeft] = useState<number>(180); // 3 minutes in seconds
+  const [sessionActive, setSessionActive] = useState<boolean>(false);
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
 
+  const formatTime = (seconds: number): string => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
+  
+  const startTimer = () => {
+    setSessionActive(true);
+    setTimeLeft(180);
+    timerRef.current = setInterval(() => {
+      setTimeLeft((prev) => {
+        if (prev <= 1) {
+          void endSession();
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+  };
   const [isLoadingSession, setIsLoadingSession] = useState<boolean>(false);
   const [isLoadingRepeat, setIsLoadingRepeat] = useState<boolean>(false);
   const [stream, setStream] = useState<MediaStream | null>(null);
@@ -180,6 +202,8 @@ export default function InteractiveAvatar() {
         console.log("Stream ready:", event.detail);
         if (event.detail) {
           setStream(event.detail);
+          startTimer(); // Add this line
+
         }
       });
       
@@ -218,6 +242,8 @@ export default function InteractiveAvatar() {
     }
   };
 
+  
+
   const handleSpeak = async (): Promise<void> => {
     if (!avatar.current || !text.trim()) return;
     
@@ -255,7 +281,12 @@ export default function InteractiveAvatar() {
     if (avatar.current) {
       await avatar.current.stopAvatar();
     }
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+    }
+    setSessionActive(false);
     setStream(null);
+    setTimeLeft(180);
   };
 
   useEffect(() => {
@@ -306,7 +337,7 @@ export default function InteractiveAvatar() {
               color: 'text.secondary',
               textAlign: { xs: 'center', sm: 'right' }
             }}>
-              I will be glad to assist you for Admission, Academic, Special, Psychological and Emotional needs
+              I can help you with Admission queries, Learning Support, Doubt solving, Counselling 
             </Typography>
           </Box>
         </Toolbar>
@@ -372,19 +403,39 @@ export default function InteractiveAvatar() {
               flexDirection: 'column',
               gap: 2,
               padding: { xs: 2, sm: 0 },
+              alignItems: 'center'
             }}>
-
-
-             
-
+              <Box sx={{
+                width: '100%',
+                maxWidth: 800,
+                height: 'auto',
+                marginBottom: 2
+              }}>
+                <img 
+                  src="/preview.png" 
+                  alt="Preview" 
+                  style={{
+                    width: '100%',
+                    height: 'auto',
+                    borderRadius: '8px',
+                    boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)'
+                  }}
+                />
+              </Box>
+          
               <Button
                 variant="contained"
                 color="primary"
-                
+                fullWidth
+                onClick={() => void startSession()}
                 size={isMobile ? "small" : "medium"}
                 disabled={!avatarId}
+                sx={{
+                  fontSize: { xs: '1rem', sm: '1.2rem' },
+                  py: 1.5
+                }}
               >
-                Start session
+                MEET ME &nbsp; <Video size={24} />
               </Button>
             </Box>
           ) : (
@@ -413,7 +464,7 @@ export default function InteractiveAvatar() {
                 setInput={setText}
                 onSubmit={() => void handleSpeak()}
               />
-              {text && (
+              {sessionActive && (
                 <Chip
                   label="Listening"
                   sx={{
@@ -425,20 +476,7 @@ export default function InteractiveAvatar() {
               )}
             </Box>
           ) : (
-            <Box sx={{
-              width: '100%',
-              textAlign: 'center',
-              padding: { xs: 1, sm: 0 },
-            }}>
-              <Button
-                variant="contained"
-                color="primary"
-                disabled={!isUserTalking}
-                size={isMobile ? "small" : "medium"}
-              >
-                {isUserTalking ? "Listening" : "Voice chat"}
-              </Button>
-            </Box>
+            <a>AI Can be wrong some times</a>
           )}
         </CardActions>
       </Card>
