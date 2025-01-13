@@ -310,24 +310,39 @@ export default function InteractiveAvatar() {
     <Box sx={{
       width: '100%',
       minHeight: '100vh',
-      padding: { xs: '10px', sm: '20px' },
+      padding: { xs: '8px', sm: '20px' },
     }}>
       <AppBar position="static" color="default" elevation={1}>
-        <Toolbar>
-          <Box sx={{ display: 'flex', alignItems: 'center', flex: 1 }}>
+        <Toolbar sx={{ flexDirection: { xs: 'column', sm: 'row' }, py: { xs: 2, sm: 0 } }}>
+          <Box sx={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            justifyContent: { xs: 'center', sm: 'flex-start' },
+            width: { xs: '100%', sm: 'auto' },
+            mb: { xs: 2, sm: 0 }
+          }}>
             <img 
               src="/logo.png" 
               alt="Logo" 
-              style={{ height: '40px', marginRight: '16px' }} 
+              style={{ 
+                height: '32px',
+                maxWidth: '100%',
+                marginRight: '16px' 
+              }} 
             />
           </Box>
-          
         </Toolbar>
       </AppBar>
 
-      <Card sx={{ maxWidth: '100%', margin: '0 auto' }}>
+      <Card sx={{ 
+        maxWidth: '100%', 
+        margin: '0 auto',
+        mt: { xs: 2, sm: 3 }
+      }}>
         <CardContent sx={{ 
-          height: { xs: 400, sm: 500 },
+          minHeight: { xs: '450px', sm: '500px' },
+          height: 'auto',
+          p: { xs: 2, sm: 3 },
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'center',
@@ -336,9 +351,9 @@ export default function InteractiveAvatar() {
           {stream ? (
             <Box sx={{
               position: 'relative',
-              height: { xs: '100%', sm: 500 },
               width: '100%',
-              maxWidth: { xs: '100%', sm: 900 },
+              height: { xs: '350px', sm: '500px' },
+              maxWidth: '900px',
             }}>
               <video
                 ref={mediaStream}
@@ -347,32 +362,34 @@ export default function InteractiveAvatar() {
                 style={{
                   width: "100%",
                   height: "100%",
-                  objectFit: isMobile ? "cover" : "contain",
+                  objectFit: "cover",
+                  borderRadius: '8px',
                 }}
               >
                 <track kind="captions" />
               </video>
               <Box sx={{
                 position: 'absolute',
-                bottom: { xs: 8, sm: 12 },
-                right: { xs: 8, sm: 12 },
+                bottom: { xs: 4, sm: 12 },
+                right: { xs: 4, sm: 12 },
                 display: 'flex',
-                flexDirection: { xs: 'row', sm: 'column' },
+                flexDirection: 'row',
                 gap: 1,
               }}>
                 <Button
                   variant="contained"
                   color="primary"
                   onClick={() => void handleInterrupt()}
-                  size={isMobile ? "small" : "medium"}
+                  size="small"
+                  sx={{ minWidth: { xs: '60px', sm: 'auto' } }}
                 >
-                  {isMobile ? "Stop" : "Interrupt task"}
+                  Stop
                 </Button>
                 <Button
                   variant="contained"
                   color="primary"
                   onClick={() => void endSession()}
-                  size={isMobile ? "small" : "medium"}
+                  size="small"
                 >
                   End
                 </Button>
@@ -380,32 +397,42 @@ export default function InteractiveAvatar() {
             </Box>
           ) : !isLoadingSession ? (
             <Box sx={{
-              width: { xs: '100%', sm: 500 },
+              width: '100%',
               display: 'flex',
               flexDirection: 'column',
-              gap: 2,
-              padding: { xs: 2, sm: 0 },
-              alignItems: 'center'
+              gap: { xs: 2, sm: 3 },
+              alignItems: 'center',
+              px: { xs: 1, sm: 0 }
             }}>
-              <Typography variant="h4" component="h1" sx={{ 
-              color: 'primary.main',
-              fontWeight: 600,
-              textAlign: { xs: 'center', sm: 'right' }
-            }}>
-              Hi, I am Dr. Seema Negi
-            </Typography>
-            <Typography variant="h6" component="h1" sx={{ 
-              color: 'primary.main',
-              fontWeight: 600,
-              textAlign: { xs: 'center', sm: 'right' }
-            }}>
-              Principal, Sanjeevini World School
-            </Typography>
+              <Typography variant="h4" 
+                component="h1" 
+                sx={{ 
+                  color: 'primary.main',
+                  fontWeight: 600,
+                  fontSize: { xs: '1.5rem', sm: '2.125rem' },
+                  textAlign: 'center',
+                }}
+              >
+                Hi, I am Dr. Seema Negi
+              </Typography>
+              
+              <Typography 
+                variant="h6" 
+                sx={{ 
+                  color: 'primary.main',
+                  fontWeight: 600,
+                  fontSize: { xs: '1rem', sm: '1.25rem' },
+                  textAlign: 'center',
+                  mb: { xs: 1, sm: 2 }
+                }}
+              >
+                Principal, Sanjeevini World School
+              </Typography>
+
               <Box sx={{
                 width: '100%',
-                maxWidth: 800,
-                height: 'auto',
-                marginBottom: 2
+                maxWidth: { xs: '100%', sm: '800px' },
+                px: { xs: 2, sm: 0 }
               }}>
                 <img 
                   src="/preview.gif" 
@@ -418,65 +445,58 @@ export default function InteractiveAvatar() {
                   }}
                 />
               </Box>
-              <Box sx={{ 
-            display: 'flex', 
-            flexDirection: 'column', 
-            alignItems: { xs: 'center', sm: 'flex-end' }
-          }}>
-            
-            <Typography variant="body1" sx={{ 
-              color: 'text.secondary',
-              textAlign: { xs: 'center', sm: 'center' }
-            }}>
-              {/* I can help you with Admission queries <Chalkboard size={17}/>, Learning Support <Brain size={17}/>, Doubt solving, Counselling  */}
-              I can help you with Admission queries, Learning Support , Doubt solving, Counselling 
 
-            </Typography>
-          </Box>
-          <Box sx={{
-  width: { xs: '100%', sm: 300 }, // Reduced from 500 to 300
-  display: 'flex',
-  flexDirection: 'column',
-  gap: 2,
-  padding: { xs: 2, sm: 0 },
-  margin: '0 auto' // Center the box
-}}>
-  <Button
-    variant="contained"
-    color="primary"
-    onClick={() => void startSession()}
-    size={isMobile ? "small" : "medium"}
-    disabled={!avatarId}
-    sx={{
-      fontSize: { xs: '0.9rem', sm: '1rem' }, // Reduced font size
-      py: 1,  // Reduced padding
-      px: 3,  // Added horizontal padding
-      width: 'auto',  // Allow button to size to content
-      margin: '0 auto', // Center the button
-      display: 'flex',
-      alignItems: 'center',
-      gap: 1
-    }}
-  >
-    MEET ME &nbsp; <Video size={20} /> {/* Reduced icon size */}
-  </Button>
-</Box>
+              <Typography 
+                variant="body1" 
+                sx={{ 
+                  color: 'text.secondary',
+                  textAlign: 'center',
+                  fontSize: { xs: '0.875rem', sm: '1rem' },
+                  maxWidth: { xs: '300px', sm: '500px' },
+                  mx: 'auto',
+                  mt: { xs: 2, sm: 3 }
+                }}
+              >
+                I can help you with Admission queries, Learning Support, Doubt solving, Counselling
+              </Typography>
+
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={() => void startSession()}
+                size="medium"
+                disabled={!avatarId}
+                sx={{
+                  fontSize: { xs: '0.875rem', sm: '1rem' },
+                  py: 1,
+                  px: 3,
+                  mt: { xs: 2, sm: 3 },
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 1
+                }}
+              >
+                MEET ME &nbsp; <Video size={18} />
+              </Button>
             </Box>
           ) : (
             <CircularProgress />
           )}
         </CardContent>
+
+        <Divider />
+        
         <CardActions sx={{
-          padding: { xs: 1, sm: 2 },
+          p: { xs: 2, sm: 3 },
           display: 'flex',
           flexDirection: 'column',
-          gap: { xs: 1, sm: 2 },
+          alignItems: 'center'
         }}>
           {chatMode === "text_mode" ? (
             <Box sx={{
               width: '100%',
               position: 'relative',
-              padding: { xs: 1, sm: 0 },
+              px: { xs: 1, sm: 2 }
             }}>
               <InteractiveAvatarTextInput
                 disabled={!stream}
@@ -487,19 +507,18 @@ export default function InteractiveAvatar() {
                 setInput={setText}
                 onSubmit={() => void handleSpeak()}
               />
-              {text && (
-                <Chip
-                  label="Listening"
-                  sx={{
-                    position: 'absolute',
-                    right: { xs: 8, sm: 64 },
-                    top: { xs: 8, sm: 12 },
-                  }}
-                />
-              )}
             </Box>
           ) : (
-            <a>This AI Can make some mistakes. Check for important info</a>
+            <Typography 
+              variant="caption" 
+              sx={{ 
+                color: 'text.secondary',
+                textAlign: 'center',
+                fontSize: { xs: '0.75rem', sm: '0.875rem' }
+              }}
+            >
+              This AI Can make some mistakes. Check for important info
+            </Typography>
           )}
         </CardActions>
       </Card>
