@@ -383,7 +383,7 @@ export default function InteractiveAvatar() {
                   size="small"
                   sx={{ minWidth: { xs: '60px', sm: 'auto' } }}
                 >
-                  Stop
+                  UnMute
                 </Button>
                 <Button
                   variant="contained"
@@ -391,7 +391,7 @@ export default function InteractiveAvatar() {
                   onClick={() => void endSession()}
                   size="small"
                 >
-                  End
+                  End Call
                 </Button>
               </Box>
             </Box>
