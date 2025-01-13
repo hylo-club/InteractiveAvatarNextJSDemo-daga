@@ -310,29 +310,9 @@ export default function InteractiveAvatar() {
     <Box sx={{
       width: '100%',
       minHeight: '100vh',
-      padding: { xs: '8px', sm: '20px' },
+      padding: { xs: '8px', sm: '0px' },
     }}>
-      <AppBar position="static" color="default" elevation={1}>
-        <Toolbar sx={{ flexDirection: { xs: 'column', sm: 'row' }, py: { xs: 2, sm: 0 } }}>
-          <Box sx={{ 
-            display: 'flex', 
-            alignItems: 'center', 
-            justifyContent: { xs: 'center', sm: 'flex-start' },
-            width: { xs: '100%', sm: 'auto' },
-            mb: { xs: 2, sm: 0 }
-          }}>
-            <img 
-              src="/logo.png" 
-              alt="Logo" 
-              style={{ 
-                height: '32px',
-                maxWidth: '100%',
-                marginRight: '16px' 
-              }} 
-            />
-          </Box>
-        </Toolbar>
-      </AppBar>
+
 
       <Card sx={{ 
         maxWidth: '100%', 
@@ -407,10 +387,10 @@ export default function InteractiveAvatar() {
               <Typography variant="h4" 
                 component="h1" 
                 sx={{ 
-                  color: 'primary.main',
                   fontWeight: 600,
                   fontSize: { xs: '1.5rem', sm: '2.125rem' },
                   textAlign: 'center',
+                  marginTop: { xs: 2, sm: 0 }
                 }}
               >
                 Hi, I am Dr. Seema Negi
@@ -419,7 +399,6 @@ export default function InteractiveAvatar() {
               <Typography 
                 variant="h6" 
                 sx={{ 
-                  color: 'primary.main',
                   fontWeight: 600,
                   fontSize: { xs: '1rem', sm: '1.25rem' },
                   textAlign: 'center',
@@ -431,7 +410,7 @@ export default function InteractiveAvatar() {
 
               <Box sx={{
                 width: '100%',
-                maxWidth: { xs: '100%', sm: '800px' },
+                maxWidth: { xs: '100%', sm: '700px' },
                 px: { xs: 2, sm: 0 }
               }}>
                 <img 
@@ -470,6 +449,7 @@ export default function InteractiveAvatar() {
                   fontSize: { xs: '0.875rem', sm: '1rem' },
                   py: 1,
                   px: 3,
+                  backgroundColor: '#4CAF50',
                   mt: { xs: 2, sm: 3 },
                   display: 'flex',
                   alignItems: 'center',
@@ -519,9 +499,29 @@ export default function InteractiveAvatar() {
             >
               This AI Can make some mistakes. Check for important info
             </Typography>
+            
           )}
         </CardActions>
+        <Box sx={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            justifyContent: { xs: 'center', sm: 'flex-end' },
+            width: { xs: '100%', sm: 'auto' },
+            mb: { xs: 2, sm: 0 }
+          }}>
+           Powered by  <img 
+              src="/logo.png" 
+              alt="Logo" 
+              style={{ 
+                height: '32px',
+                maxWidth: '100%',
+                marginRight: '16px' 
+              }} 
+            />
+          </Box>
       </Card>
+     
     </Box>
+    
   );
 }
