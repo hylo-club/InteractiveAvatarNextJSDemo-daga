@@ -321,25 +321,7 @@ export default function InteractiveAvatar() {
               style={{ height: '40px', marginRight: '16px' }} 
             />
           </Box>
-          <Box sx={{ 
-            display: 'flex', 
-            flexDirection: 'column', 
-            alignItems: { xs: 'center', sm: 'flex-end' }
-          }}>
-            <Typography variant="h6" component="h1" sx={{ 
-              color: 'primary.main',
-              fontWeight: 600,
-              textAlign: { xs: 'center', sm: 'right' }
-            }}>
-              Hi, I am Seema Negi
-            </Typography>
-            <Typography variant="body1" sx={{ 
-              color: 'text.secondary',
-              textAlign: { xs: 'center', sm: 'right' }
-            }}>
-              I can help you with Admission queries, Learning Support, Doubt solving, Counselling 
-            </Typography>
-          </Box>
+          
         </Toolbar>
       </AppBar>
 
@@ -405,6 +387,13 @@ export default function InteractiveAvatar() {
               padding: { xs: 2, sm: 0 },
               alignItems: 'center'
             }}>
+              <Typography variant="h6" component="h1" sx={{ 
+              color: 'primary.main',
+              fontWeight: 600,
+              textAlign: { xs: 'center', sm: 'right' }
+            }}>
+              Hi, I am Seema Negi
+            </Typography>
               <Box sx={{
                 width: '100%',
                 maxWidth: 800,
@@ -412,7 +401,7 @@ export default function InteractiveAvatar() {
                 marginBottom: 2
               }}>
                 <img 
-                  src="/preview.png" 
+                  src="/preview.gif" 
                   alt="Preview" 
                   style={{
                     width: '100%',
@@ -422,21 +411,47 @@ export default function InteractiveAvatar() {
                   }}
                 />
               </Box>
-          
-              <Button
-                variant="contained"
-                color="primary"
-                fullWidth
-                onClick={() => void startSession()}
-                size={isMobile ? "small" : "medium"}
-                disabled={!avatarId}
-                sx={{
-                  fontSize: { xs: '1rem', sm: '1.2rem' },
-                  py: 1.5
-                }}
-              >
-                MEET ME &nbsp; <Video size={24} />
-              </Button>
+              <Box sx={{ 
+            display: 'flex', 
+            flexDirection: 'column', 
+            alignItems: { xs: 'center', sm: 'flex-end' }
+          }}>
+            
+            <Typography variant="body1" sx={{ 
+              color: 'text.secondary',
+              textAlign: { xs: 'center', sm: 'right' }
+            }}>
+              I can help you with Admission queries, Learning Support, Doubt solving, Counselling 
+            </Typography>
+          </Box>
+          <Box sx={{
+  width: { xs: '100%', sm: 300 }, // Reduced from 500 to 300
+  display: 'flex',
+  flexDirection: 'column',
+  gap: 2,
+  padding: { xs: 2, sm: 0 },
+  margin: '0 auto' // Center the box
+}}>
+  <Button
+    variant="contained"
+    color="primary"
+    onClick={() => void startSession()}
+    size={isMobile ? "small" : "medium"}
+    disabled={!avatarId}
+    sx={{
+      fontSize: { xs: '0.9rem', sm: '1rem' }, // Reduced font size
+      py: 1,  // Reduced padding
+      px: 3,  // Added horizontal padding
+      width: 'auto',  // Allow button to size to content
+      margin: '0 auto', // Center the button
+      display: 'flex',
+      alignItems: 'center',
+      gap: 1
+    }}
+  >
+    MEET ME &nbsp; <Video size={20} /> {/* Reduced icon size */}
+  </Button>
+</Box>
             </Box>
           ) : (
             <CircularProgress />
@@ -476,7 +491,7 @@ export default function InteractiveAvatar() {
               )}
             </Box>
           ) : (
-            <a>AI Can be wrong some times</a>
+            <a>This AI Can make some mistakes. Check for important info</a>
           )}
         </CardActions>
       </Card>
