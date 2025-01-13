@@ -387,12 +387,19 @@ export default function InteractiveAvatar() {
               padding: { xs: 2, sm: 0 },
               alignItems: 'center'
             }}>
-              <Typography variant="h6" component="h1" sx={{ 
+              <Typography variant="h4" component="h1" sx={{ 
               color: 'primary.main',
               fontWeight: 600,
               textAlign: { xs: 'center', sm: 'right' }
             }}>
               Hi, I am Seema Negi
+            </Typography>
+            <Typography variant="h6" component="h1" sx={{ 
+              color: 'primary.main',
+              fontWeight: 600,
+              textAlign: { xs: 'center', sm: 'right' }
+            }}>
+              Principal, Sanjeevini World School
             </Typography>
               <Box sx={{
                 width: '100%',
@@ -419,7 +426,7 @@ export default function InteractiveAvatar() {
             
             <Typography variant="body1" sx={{ 
               color: 'text.secondary',
-              textAlign: { xs: 'center', sm: 'right' }
+              textAlign: { xs: 'center', sm: 'center' }
             }}>
               I can help you with Admission queries, Learning Support, Doubt solving, Counselling 
             </Typography>
