@@ -392,7 +392,7 @@ export default function InteractiveAvatar() {
               fontWeight: 600,
               textAlign: { xs: 'center', sm: 'right' }
             }}>
-              Hi, I am Seema Negi
+              Hi, I am Dr. Seema Negi
             </Typography>
             <Typography variant="h6" component="h1" sx={{ 
               color: 'primary.main',
@@ -464,7 +464,6 @@ export default function InteractiveAvatar() {
             <CircularProgress />
           )}
         </CardContent>
-        <Divider />
         <CardActions sx={{
           padding: { xs: 1, sm: 2 },
           display: 'flex',
