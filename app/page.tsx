@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { PaperPlaneRight, Video } from "@phosphor-icons/react";
+import { PaperPlaneRight, Video, Chalkboard, Brain } from "@phosphor-icons/react";
 import StreamingAvatar, {
   AvatarQuality,
   StreamingEvents,
@@ -428,7 +428,9 @@ export default function InteractiveAvatar() {
               color: 'text.secondary',
               textAlign: { xs: 'center', sm: 'center' }
             }}>
-              I can help you with Admission queries, Learning Support, Doubt solving, Counselling 
+              {/* I can help you with Admission queries <Chalkboard size={17}/>, Learning Support <Brain size={17}/>, Doubt solving, Counselling  */}
+              I can help you with Admission queries, Learning Support , Doubt solving, Counselling 
+
             </Typography>
           </Box>
           <Box sx={{
@@ -485,7 +487,7 @@ export default function InteractiveAvatar() {
                 setInput={setText}
                 onSubmit={() => void handleSpeak()}
               />
-              {sessionActive && (
+              {text && (
                 <Chip
                   label="Listening"
                   sx={{

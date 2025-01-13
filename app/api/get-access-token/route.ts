@@ -11,7 +11,7 @@ export async function POST() {
       {
         method: "POST",
         headers: {
-          "x-api-key": "NTlmNmJiZDdiNDFlNGJiYTlkNzE5MjFmNWNkM2QwMWMtMTczNDA2NTYwOA==",
+          "x-api-key": "NTlmNmJiZDdiNDFlNGJiYTlkNzE5MjFmNWNkM2QwMWMtMTczNjc0NDE5MA==",
         },
       },
     );
