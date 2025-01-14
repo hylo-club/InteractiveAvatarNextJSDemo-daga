@@ -42,9 +42,13 @@ interface Language {
   key: string;
 }
 
-const AVATARS: Avatar[] = [
-  
+interface Message {
+  content: string;
+  conversation_id: string;
+  role: 'user' | 'assistant';
+}
 
+const AVATARS: Avatar[] = [
   {
     avatar_id: "da6bd896e2b843e4b4d033a4473eebef",
     name: "Anna Professor",
@@ -56,6 +60,66 @@ const STT_LANGUAGE_LIST: Language[] = [
   { label: 'Chinese', value: 'zh', key: 'zh' },
   { label: 'English', value: 'en', key: 'en' },
 ];
+
+async function createConversation(): Promise<string> {
+  try {
+    const response = await fetch('https://hylo.travelr.club/v1/graphql', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-hasura-admin-secret': 'legalpwd123'
+      },
+      body: JSON.stringify({
+        query: `
+          mutation CreateConversation {
+            insert_conversation_one(object: {}) {
+              id
+            }
+          }
+        `
+      })
+    });
+
+    const data = await response.json();
+    return data.data.insert_conversation_one.id;
+  } catch (error) {
+    console.error('Error creating conversation:', error);
+    throw error;
+  }
+}
+
+async function addMessage(message: Message): Promise<void> {
+  try {
+    await fetch('https://hylo.travelr.club/v1/graphql', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-hasura-admin-secret': 'legalpwd123'
+      },
+      body: JSON.stringify({
+        query: `
+          mutation AddMessage($content: String!, $conversation_id: uuid!, $role: String!) {
+            insert_message_one(object: {
+              content: $content,
+              conversation_id: $conversation_id,
+              role: $role
+            }) {
+              id
+            }
+          }
+        `,
+        variables: {
+          content: message.content,
+          conversation_id: message.conversation_id,
+          role: message.role
+        }
+      })
+    });
+  } catch (error) {
+    console.error('Error adding message:', error);
+    throw error;
+  }
+}
 
 interface InteractiveAvatarTextInputProps {
   label: string;
@@ -119,8 +183,46 @@ function InteractiveAvatarTextInput({
 export default function InteractiveAvatar() {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-  const [timeLeft, setTimeLeft] = useState<number>(180); // 3 minutes in seconds
+  const [timeLeft, setTimeLeft] = useState<number>(180);
   const [sessionActive, setSessionActive] = useState<boolean>(false);
+  const [conversationId, setConversationId] = useState<string | null>(null);
+  const [hasAvatarEndedMessage, setHasAvatarEndedMessage] = useState(false);
+  const [currentAvatarMessage, setCurrentAvatarMessage] = useState<string>('');
+  
+  // Effect to handle saving messages when avatar ends speaking
+  useEffect(() => {
+    const saveMessage = async () => {
+      console.log('Checking if message needs to be saved...', hasAvatarEndedMessage, currentAvatarMessage, conversationId);
+      if (hasAvatarEndedMessage && currentAvatarMessage && conversationId) {
+        console.log('Saving message:', currentAvatarMessage);
+        try {
+          await addMessage({
+            content: currentAvatarMessage,
+            conversation_id: conversationId,
+            role: 'assistant'
+          });
+          console.log('Message saved successfully');
+          setHasAvatarEndedMessage(false);
+          setCurrentAvatarMessage('');
+
+        } catch (error) {
+          console.error('Error saving message:', error);
+        }
+      }
+    };
+
+    saveMessage();
+  }, [hasAvatarEndedMessage, currentAvatarMessage, conversationId]);
+
+  // Other useEffects...
+  useEffect(() => {
+    console.log("conversation id updated to:", conversationId);
+  }, [conversationId]);
+
+  // Add useEffect to track currentAvatarMessage changes
+  useEffect(() => {
+    console.log("currentAvatarMessage updated to:", currentAvatarMessage);
+  }, [currentAvatarMessage]);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
   const formatTime = (seconds: number): string => {
@@ -142,6 +244,7 @@ export default function InteractiveAvatar() {
       });
     }, 1000);
   };
+
   const [isLoadingSession, setIsLoadingSession] = useState<boolean>(false);
   const [isLoadingRepeat, setIsLoadingRepeat] = useState<boolean>(false);
   const [stream, setStream] = useState<MediaStream | null>(null);
@@ -170,7 +273,13 @@ export default function InteractiveAvatar() {
 
   const startSession = async (): Promise<void> => {
     setIsLoadingSession(true);
+    setCurrentAvatarMessage('');
     try {
+      // Create new conversation
+      const newConversationId = await createConversation();
+      console.log("New conversation created with id:", newConversationId);
+      setConversationId(newConversationId);
+
       const newToken = await fetchAccessToken();
       if (!newToken) {
         throw new Error("Failed to get access token");
@@ -186,24 +295,43 @@ export default function InteractiveAvatar() {
 
       // Set up event listeners
       avatar.current.on(StreamingEvents.AVATAR_START_TALKING, (e) => {
-        console.log("Avatar started talking", e);
+        console.log("Avatar started talking", JSON.stringify(e));
       });
-      
+
+      avatar.current.on(StreamingEvents.AVATAR_TALKING_MESSAGE, (message) => {
+        const messageText = message?.detail?.message || '';
+        setCurrentAvatarMessage(prev => prev + messageText);
+        console.log("Avatar said", messageText);
+      });
+
       avatar.current.on(StreamingEvents.AVATAR_STOP_TALKING, (e) => {
         console.log("Avatar stopped talking", e);
+        setHasAvatarEndedMessage(true)
       });
       
       avatar.current.on(StreamingEvents.STREAM_DISCONNECTED, () => {
         console.log("Stream disconnected");
         void endSession();
       });
-      
+
+      avatar.current.on(StreamingEvents.USER_TALKING_MESSAGE, async (message) => {
+        console.log('User said:', message?.detail.message);
+        const userMessage = message?.detail.message;
+        if (newConversationId && userMessage) {
+          console.log('Adding user message to conversation:', newConversationId);
+          await addMessage({
+            content: userMessage,
+            conversation_id: newConversationId,
+            role: 'user'
+          });
+        }
+      });
+
       avatar.current.on(StreamingEvents.STREAM_READY, (event) => {
         console.log("Stream ready:", event.detail);
         if (event.detail) {
           setStream(event.detail);
-          startTimer(); // Add this line
-
+          startTimer();
         }
       });
       
@@ -211,12 +339,28 @@ export default function InteractiveAvatar() {
         console.log("User started talking");
         setIsUserTalking(true);
       });
-      
+
+      avatar.current.on(StreamingEvents.AVATAR_END_MESSAGE, async (message) => {
+        console.log('Avatar end message:', message);
+        if (newConversationId && currentAvatarMessage) {
+          console.log('Adding avatar message to conversation:', newConversationId);
+          await addMessage({
+            content: currentAvatarMessage,
+            conversation_id: newConversationId,
+            role: 'assistant'
+          });
+        }
+      });
+
       avatar.current.on(StreamingEvents.USER_STOP, () => {
         console.log("User stopped talking");
         setIsUserTalking(false);
       });
 
+      avatar.current.on(StreamingEvents.USER_END_MESSAGE, (message) => {
+        console.log('User end message:', message);
+      });
+      
       await avatar.current.createStartAvatar({
         quality: AvatarQuality.High,
         avatarName: avatarId,
@@ -242,12 +386,11 @@ export default function InteractiveAvatar() {
     }
   };
 
-  
-
   const handleSpeak = async (): Promise<void> => {
     if (!avatar.current || !text.trim()) return;
     
     setIsLoadingRepeat(true);
+    console.log("Speaking:", text);
     try {
       await avatar.current.speak({
         text: text,
@@ -287,6 +430,8 @@ export default function InteractiveAvatar() {
     setSessionActive(false);
     setStream(null);
     setTimeLeft(180);
+    setConversationId(null);
+    setCurrentAvatarMessage('');
   };
 
   useEffect(() => {
@@ -312,8 +457,6 @@ export default function InteractiveAvatar() {
       minHeight: '100vh',
       padding: { xs: '8px', sm: '0px' },
     }}>
-
-
       <Card sx={{ 
         maxWidth: '100%', 
         margin: '0 auto',
@@ -499,29 +642,27 @@ export default function InteractiveAvatar() {
             >
               This AI Can make some mistakes. Check for important info
             </Typography>
-            
           )}
         </CardActions>
         <Box sx={{ 
-            display: 'flex', 
-            alignItems: 'center', 
-            justifyContent: { xs: 'center', sm: 'flex-end' },
-            width: { xs: '100%', sm: 'auto' },
-            mb: { xs: 2, sm: 0 }
-          }}>
-           Powered by  <img 
-              src="/logo.png" 
-              alt="Logo" 
-              style={{ 
-                height: '32px',
-                maxWidth: '100%',
-                marginRight: '16px' 
-              }} 
-            />
-          </Box>
+          display: 'flex', 
+          alignItems: 'center', 
+          justifyContent: { xs: 'center', sm: 'flex-end' },
+          width: { xs: '100%', sm: 'auto' },
+          mb: { xs: 2, sm: 0 },
+          px: 2
+        }}>
+          Powered by <img 
+            src="/logo.png" 
+            alt="Logo" 
+            style={{ 
+              height: '32px',
+              maxWidth: '100%',
+              marginLeft: '8px'
+            }} 
+          />
+        </Box>
       </Card>
-     
     </Box>
-    
   );
 }
