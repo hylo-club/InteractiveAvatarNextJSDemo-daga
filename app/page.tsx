@@ -72,10 +72,10 @@ async function createConversation(): Promise<string> {
       body: JSON.stringify({
         query: `
           mutation CreateConversation {
-            insert_conversation_one(object: {}) {
-              id
-            }
-          }
+  insert_conversation_one(object: {teacher_id: "a411a4db-97f8-47d7-95db-031ff675ab8e"}) {
+    id
+  }
+}
         `
       })
     });
