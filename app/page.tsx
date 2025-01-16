@@ -568,19 +568,7 @@ export default function InteractiveAvatar() {
                 />
               </Box>
 
-              <Typography 
-                variant="body1" 
-                sx={{ 
-                  color: 'text.secondary',
-                  textAlign: 'center',
-                  fontSize: { xs: '0.875rem', sm: '1rem' },
-                  maxWidth: { xs: '300px', sm: '500px' },
-                  mx: 'auto',
-                  mt: { xs: 2, sm: 3 }
-                }}
-              >
-                I can help you with Admission queries, Learning Support, Doubt solving, Counselling
-              </Typography>
+             
 
               <Button
                 variant="contained"
@@ -601,6 +589,19 @@ export default function InteractiveAvatar() {
               >
                 MEET ME &nbsp; <Video size={18} />
               </Button>
+              <Typography 
+                variant="body1" 
+                sx={{ 
+                  color: 'text.secondary',
+                  textAlign: 'center',
+                  fontSize: { xs: '0.875rem', sm: '1rem' },
+                  maxWidth: { xs: '300px', sm: '500px' },
+                  mx: 'auto',
+                  mt: { xs: 2, sm: 3 }
+                }}
+              >
+                I can help you with Admission queries, Learning Support, Doubt solving, Counselling
+              </Typography>
             </Box>
           ) : (
             <CircularProgress />
