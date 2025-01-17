@@ -506,7 +506,7 @@ export default function InteractiveAvatar() {
                   size="small"
                   sx={{ minWidth: { xs: '60px', sm: 'auto' } }}
                 >
-                  UnMute
+                  Interrupt AI
                 </Button>
                 <Button
                   variant="contained"
