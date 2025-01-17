@@ -249,8 +249,8 @@ export default function InteractiveAvatar() {
   const [isLoadingRepeat, setIsLoadingRepeat] = useState<boolean>(false);
   const [stream, setStream] = useState<MediaStream | null>(null);
   const [debug, setDebug] = useState<string>("");
-  const [knowledgeId] = useState<string>("f784b05c0195480486805d96cdfec2e9");
-  const [avatarId, setAvatarId] = useState<string>("eacbb14b1c3b4586876c521713bae943");
+  const [knowledgeId] = useState<string>("66ec1747246849feafb1caaabef98dc9");
+  const [avatarId, setAvatarId] = useState<string>("e11bf885134a4429b38332040c46d80b");
   const [language, setLanguage] = useState<string>('en');
   const [text, setText] = useState<string>("");
   const [chatMode, setChatMode] = useState<"voice_mode" | "text_mode">("voice_mode");
@@ -536,7 +536,7 @@ export default function InteractiveAvatar() {
                   marginTop: { xs: 2, sm: 0 }
                 }}
               >
-                Hi, I am Dr. Seema Negi
+                Hello I am Shreyaan Daga,
               </Typography>
               
               <Typography 
@@ -548,7 +548,7 @@ export default function InteractiveAvatar() {
                   mb: { xs: 1, sm: 2 }
                 }}
               >
-                Principal, Sanjeevini World School
+                the 18-year-old founder of OLL a skill development platform
               </Typography>
 
               <Box sx={{
